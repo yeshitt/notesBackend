@@ -17,6 +17,10 @@ const notesSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please specify a branch"],
   },
+  contributorId: {
+    type: mongoose.Types.ObjectId,
+    required: [true, "Contributor Id Required"],
+  },
 });
 
 const notesModel = mongoose.model("Notes", notesSchema);
