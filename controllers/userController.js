@@ -1,5 +1,6 @@
 const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
+const JWT = require("jsonwebtoken");
 
 exports.registerController = async (req, res) => {
   try {
@@ -52,10 +53,12 @@ exports.loginController = async (req, res) => {
         message: "Invalid password",
       });
     }
+    const token = await user.createJWT();
     return res.status(200).send({
       success: true,
       message: "Login successful",
       user,
+      token,
     });
   } catch (error) {
     console.log(error);

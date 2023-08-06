@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 
 const contributorSchema = new mongoose.Schema(
   {
@@ -25,6 +26,12 @@ const contributorSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+contributorSchema.methods.createJWT = function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: "7d",
+  });
+};
 
 const contributorModel = mongoose.model("Contributor", contributorSchema);
 module.exports = contributorModel;

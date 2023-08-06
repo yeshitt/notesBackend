@@ -1,4 +1,4 @@
-const userModel = require("../models/userModel");
+const contributorModel = require("../models/contributorModel");
 const bcrypt = require("bcrypt");
 
 exports.registerController = async (req, res) => {
@@ -12,12 +12,16 @@ exports.registerController = async (req, res) => {
       });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new userModel({ username, email, password: hashedPassword });
-    await user.save();
+    const contributor = new contributorModel({
+      username,
+      email,
+      password: hashedPassword,
+    });
+    await contributor.save();
     return res.status(201).send({
       success: true,
-      message: "New User Created",
-      user,
+      message: "New contributor Created",
+      contributor,
     });
   } catch (error) {
     console.log(error);
@@ -38,24 +42,26 @@ exports.loginController = async (req, res) => {
         message: "Please provide email/password",
       });
     }
-    const user = await userModel.findOne({ email });
-    if (!user) {
+    const contributor = await contributorModel.findOne({ email });
+    if (!contributor) {
       return res.status(200).send({
         success: false,
         message: "Email is not registered",
       });
     }
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, contributor.password);
     if (!isMatch) {
       return res.status(401).send({
         success: false,
         message: "Invalid password",
       });
     }
+    const token = contributor.createJWT();
     return res.status(200).send({
       success: true,
       message: "Login successful",
-      user,
+      contributor,
+      token,
     });
   } catch (error) {
     console.log(error);
