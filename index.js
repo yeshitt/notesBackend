@@ -4,6 +4,8 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./connection/connectDb");
 const userRoute = require("./routes/userRoute");
+const contributorRoute = require("./routes/contributorRoute");
+const notesRoute = require("./routes/notesRoute");
 //configure dotenv
 dotenv.config();
 
@@ -19,6 +21,8 @@ app.use(express.json());
 
 //routes
 app.use("/api/v1/user", userRoute);
+app.use("/api/v1/contributor", contributorRoute);
+app.use("/api/v1/notes", notesRoute);
 
 //Listening app
 PORT = process.env.PORT || 8080;
