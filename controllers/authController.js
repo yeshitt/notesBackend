@@ -17,10 +17,12 @@ exports.registerController = async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = new userModel({ username, email, password: hashedPassword });
       await user.save();
+      const token = await user.createJWT()
       return res.status(201).send({
         success: true,
         message: "New User Created",
         user,
+        token
       });
     } catch (error) {
       console.log(error);
@@ -47,10 +49,14 @@ exports.registerController = async (req, res) => {
         password: hashedPassword,
       });
       await contributor.save();
+
+      const token = await contributor.createJWT()
+
       return res.status(201).send({
         success: true,
         message: "New contributor Created",
         contributor,
+        token
       });
     } catch (error) {
       console.log(error);
@@ -72,40 +78,50 @@ exports.loginController = async (req, res) => {
     });
   }
   if (role === "user") {
-    const user = await userModel.findOne({ email });
-    if (!user) {
+    
+    try {
+      const user = await userModel.findOne({ email });
+      if (!user) {
+        return res.status(200).send({
+          success: false,
+          message: "Invalid Credentials",
+        });
+      }
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(401).send({
+          success: false,
+          message: "Invalid Credentials",
+        });
+      }
+      const token = await user.createJWT();
       return res.status(200).send({
-        success: false,
-        message: "Email is not registered",
+        success: true,
+        message: "Login successful",
+        user,
+        token,
       });
     }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).send({
-        success: false,
-        message: "Invalid password",
-      });
+    catch(error) {
+      return res.status(500).json({
+        success:false,
+        msg:'Login Failed'
+      })
     }
-    const token = await user.createJWT();
-    return res.status(200).send({
-      success: true,
-      message: "Login successful",
-      user,
-      token,
-    });
+
   } else if (role === "contributor") {
     const contributor = await contributorModel.findOne({ email });
     if (!contributor) {
       return res.status(200).send({
         success: false,
-        message: "Email is not registered",
+        message: "Invalid Credentials",
       });
     }
     const isMatch = await bcrypt.compare(password, contributor.password);
     if (!isMatch) {
       return res.status(401).send({
         success: false,
-        message: "Invalid password",
+        message: "Invalid Credentials",
       });
     }
     const token = contributor.createJWT();
@@ -116,11 +132,9 @@ exports.loginController = async (req, res) => {
       token,
     });
   } else {
-    console.log(error);
     return res.status(500).send({
       success: false,
       message: "Login failed",
-      error,
     });
   }
 };
