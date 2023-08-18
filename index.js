@@ -5,6 +5,7 @@ const cors = require("cors");
 const connectDB = require("./connection/connectDb");
 const authRoute = require("./routes/authRoute");
 const notesRoute = require("./routes/notesRoute");
+const authMiddleware = require('./middleware/auth')
 //configure dotenv
 dotenv.config();
 
@@ -20,7 +21,7 @@ app.use(express.json());
 
 //routes
 app.use("/api/v1/auth", authRoute);
-app.use("/api/v1/notes", notesRoute);
+app.use("/api/v1/notes",authMiddleware, notesRoute);
 
 //Listening app
 PORT = process.env.PORT || 8080;

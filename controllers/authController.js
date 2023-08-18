@@ -21,7 +21,7 @@ exports.registerController = async (req, res) => {
       return res.status(201).send({
         success: true,
         message: "New User Created",
-        user,
+        details:user,
         token
       });
     } catch (error) {
@@ -55,7 +55,7 @@ exports.registerController = async (req, res) => {
       return res.status(201).send({
         success: true,
         message: "New contributor Created",
-        contributor,
+        details:contributor,
         token
       });
     } catch (error) {
@@ -98,7 +98,7 @@ exports.loginController = async (req, res) => {
       return res.status(200).send({
         success: true,
         message: "Login successful",
-        user,
+        details:user,
         token,
       });
     }
@@ -128,7 +128,7 @@ exports.loginController = async (req, res) => {
     return res.status(200).send({
       success: true,
       message: "Login successful",
-      contributor,
+      details:contributor,
       token,
     });
   } else {

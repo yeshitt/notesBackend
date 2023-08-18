@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.methods.createJWT = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+  return jwt.sign({ id: this._id, role:'user' }, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
 };

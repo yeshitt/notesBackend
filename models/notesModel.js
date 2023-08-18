@@ -7,7 +7,7 @@ const notesSchema = new mongoose.Schema(
       required: [true, "Please specify a branch"],
     },
     year: {
-      type: Number,
+      type: String,
       required: [true, "Please specify a year"],
     },
     subject: {

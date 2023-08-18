@@ -1,5 +1,6 @@
 const notesModel = require("../models/notesModel");
 const mongoose = require("mongoose");
+const {StatusCodes} = require('http-status-codes')
 
 //Get all notes
 exports.getNotesController = async (req, res) => {
@@ -29,6 +30,16 @@ exports.getNotesController = async (req, res) => {
 
 //Create a new note
 exports.createNoteController = async (req, res) => {
+  const {role, id:contributorId } = req.user
+  
+
+  if(role!=='contributor') {
+    return res.status(StatusCodes.UNAUTHORIZED).json({
+      success: false,
+      msg: 'Only Contributors can create Notes'
+    })
+  }
+
   try {
     const { branch, year, subject, link } = req.body;
     //validation
@@ -38,7 +49,7 @@ exports.createNoteController = async (req, res) => {
         message: "Please provide all fields",
       });
     }
-    const newNote = new notesModel({ ...req.body });
+    const newNote = new notesModel({ ...req.body, contributorId});
     await newNote.save();
     return res.status(200).send({
       success: true,

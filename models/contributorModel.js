@@ -28,7 +28,7 @@ const contributorSchema = new mongoose.Schema(
 );
 
 contributorSchema.methods.createJWT = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+  return jwt.sign({ id: this._id, role:'contributor'}, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
 };
